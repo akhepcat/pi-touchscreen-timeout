@@ -50,6 +50,7 @@ int main(int argc, char* argv[]){
         int i;
         int tlen;
         int timeout;
+        int debug = 0;
         tlen = strlen(argv[1]);
         for (i=0;i<tlen; i++)
                 if (!isdigit(argv[1][i])) {
@@ -125,12 +126,12 @@ int main(int argc, char* argv[]){
                 light_size = read(lightfd, &read_on, sizeof(char));
                 if(light_size == sizeof(char) && read_on != on) {
                         if (read_on == '0') {
-                                printf("Power enabled externally - Timeout reset\n");
+                                if (debug) { printf("Power enabled externally - Timeout reset\n"); }
                                 on = '0';
                                 touch = now;
                         }
                         else if (read_on == '1') {
-                                printf("Power disabled externally\n");
+                                if (debug) { printf("Power disabled externally\n"); }
                                 on = '1';
                         }
                 }
@@ -138,11 +139,11 @@ int main(int argc, char* argv[]){
                 for (i = 0; i < num_dev; i++) {               
                         event_size = read(eventfd[i], event, size*64);
                         if(event_size != -1) {
-                                printf("%s Value: %d, Code: %x\n", device[i], event[0].value, event[0].code);
+                                if (debug) { printf("%s Value: %d, Code: %x\n", device[i], event[0].value, event[0].code); }
                                 touch = now;
 
                                 if(on == '1') {
-                                        printf("Turning On\n");
+                                        if (debug) { printf("Turning On\n"); }
                                         on = '0';
                                         write(lightfd, &on, sizeof(char));
                                 }
@@ -151,7 +152,7 @@ int main(int argc, char* argv[]){
 
                 if(difftime(now, touch) > timeout) {
                         if(on == '0') {
-                                printf("Turning Off\n");
+                                if (debug) { printf("Turning Off\n"); }
                                 on = '1';
                                 write(lightfd, &on, sizeof(char));
                         }
