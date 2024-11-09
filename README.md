@@ -13,7 +13,7 @@ timeout period is set by a command-line argument.
 display. Whatever is running will still receive an event, even if the display
 is off.
 
-The program will use a linux event device like `/dev/input/event0` to receive events
+The program will use all available linux event device like `/dev/input/event0` to receive events
 from the touchscreen, keyboard, mouse, etc., and `/sys/class/backlight/rpi-backlight/bl_power`
 to turn the backlight on and off. The event device is a command-line parameter without the
 /dev/input/ path specification.
@@ -28,14 +28,13 @@ cd pi-touchscreen-timeout
 
 Build and run it!
 ```
-gcc timeout.c -o timeout
-sudo ./timeout 10 rpi_backlight event0
+make
+make install
+sudo run-tstimeout.sh
 ```
-Your backlight might be named differently. To find your backlight name, use `ls /sys/class/backlight/` and replace `rpi_backlight` in the command above
 
-Multiple devices may be specified.
-
-**Note:** It must be run as root or with `sudo` to be able to access the backlight.
+This will automatically discover the input devices as well as any backlight
+devices, and monitor/set them all
 
 It is recommended to make it run at startup, for example by putting a line in 
 `/etc/rc.local`
