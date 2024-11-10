@@ -38,6 +38,9 @@ devices, and monitor/set them all
 
 It is recommended to make it run at startup, for example by putting a line in 
 `/etc/rc.local`
+or, for systemd-enabled systems, you can:
+'make systemd'
+and it will set things up for you
 
 
 ### Conflict with console blanker
