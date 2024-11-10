@@ -1,0 +1,6 @@
+# this is an environment file for run-tstimeout
+
+# This sets the screen-blanking delay.   the default is 30 seconds
+
+# 300 seconds is 5 minutes
+TIMEOUT=300
