@@ -1,5 +1,5 @@
 [Unit]
-Description=network watchdog for end-to-end connectivity validation
+Description=Runs the touchscreen timeout service in the background
 
 [Service]
 EnvironmentFile=-/etc/default/tstimeout
