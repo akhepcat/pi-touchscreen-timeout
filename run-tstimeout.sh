@@ -5,8 +5,7 @@
 
 declare -a devs
 
-if [ ! \( \( "${USER}" = "root" \) -o \( -n "${EUID}" -a ${EUID} = 0 \) \) ]
-then
+if [ ! \( \( "${USER}" = "root" \) -o \( -n "${EUID}" -a ${EUID} = 0 \) \) ]; then
         echo "root privs required. re-run with sudo."
         exit 1
 fi
@@ -19,14 +18,14 @@ timeout_period=${delay:-30} # seconds
 # Find the device the touchscreen uses.  This can change depending on
 # other input devices (keyboard, mouse) are connected at boot time.
 # This simpler method lets all inputs trigger the backlight restoral
-for line in $(lsinput); do
-        if [[ $line != *"FT5406"* ]] ; then
-            if [ -n "$line" -a -z "${line//\/dev\/input\/*/}" ]; then
-                dev="${line//*input\//}"
-		devs+=($dev)
-            fi
-        fi
+# we limit it to only physical 'inputs'
+inputs=$(lsinput  | grep -i input | grep -B1 phys | grep /dev/)
 
+for line in $inputs; do
+	if [ -n "$line" -a -z "${line//\/dev\/input\/*/}" ]; then
+		dev="${line//*input\//}"
+		devs+=($dev)
+	fi
 done
 
 bldirs=$(find -L /sys/class/backlight/ -maxdepth 1 -type d -iwholename '/sys/class/backlight/[0-9]*' | sed 's|/sys/class/backlight/||g;')
@@ -38,7 +37,6 @@ bldirs=$(find -L /sys/class/backlight/ -maxdepth 1 -type d -iwholename '/sys/cla
 #    Use lsinput to see input devices.
 #    Device to use is shown as /dev/input/<device>
 
-for bl in ${bldirs}
-do
+for bl in ${bldirs}; do
 	nice -n 19 /usr/local/bin/tstimeout $timeout_period $bl ${devs[@]} &
 done
